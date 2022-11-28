@@ -251,6 +251,7 @@ def Movement(exPosition, newPosition):
          insertValue(currentPlayer,newPosition)
      else:
          print("deplacement pas possible ")
+         Movement(exPosition, newPosition)
 
 #Player Movemement
 def playerMove():
@@ -268,7 +269,7 @@ def playerMove():
 #DEFINITION ALPHA BETA
 def AlphaBeta(board):
    
-    profondeurtest = 4
+    profondeurtest = 3
     localboard= deepcopy(board)
     
     
@@ -406,8 +407,8 @@ def eval(board):
     elif(checkWin(board)==True and currentPlayer=='B'):
         return -1
     else:
-        valeur=ScoreBoard(board)
-        return valeur
+        #valeur=ScoreBoard(board)
+        return 0
 
 
 #DECTION DES PROCHAIN ETAT DE JEUX
@@ -519,6 +520,8 @@ while not checkWin(board):
         currentPlayer='N'
    else:
         currentPlayer='B'
+
+   os.system("pause")
    computerMove()
    if(currentPlayer=='N'):
         currentPlayer='B'

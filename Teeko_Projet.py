@@ -2,7 +2,9 @@ from binascii import a2b_qp
 from copy import deepcopy
 from json.encoder import INFINITY
 import os
+import random
 from site import ENABLE_USER_SITE
+from turtle import position
 
 
 
@@ -266,10 +268,55 @@ def playerMove():
 
 #Computer Movement
 
+#POSE DES PIONS ORDINATEUR
+def computerset(board,compteur):
+    scoreboard={1:1,2:8,3:5,4:8,5:1,
+                6:8,7:10,8:10,9:10,10:8,
+                11:5,12:10,13:20,14:10,15:5,
+                16:8,17:10,18:10,19:10,20:8,
+                21:1,22:8,23:5,24:8,25:1}
+    global machinePlayer
+    position=0
+    score=0
+    if(compteur !=4):
+        for i in range(1,26):
+            if (espaceFree(i) and scoreboard[i]>score):
+                score=scoreboard[i]
+                position=i
+            
+        board[position]= machinePlayer
+        printBoard(board)
+    elif(compteur==4):
+        for i in range(1,26):
+            tab=deepcopy(board)
+            if espaceFree(i):
+                tab[i]= machinePlayer
+                if(checkWin(tab)==True):
+                    position=i
+                    break
+  
+            if(i==25):
+                computerset(board,5)
+            
+        board[position]= machinePlayer
+        printBoard(board)
+        if(checkWin(board)):
+            print("Ordinatuer a gagne")
+            exit()
+                   
+            
+
+
+
+         
+    
+
+
+
 #DEFINITION ALPHA BETA
 def AlphaBeta(board):
    
-    profondeurtest = 3
+    profondeurtest = 5
     localboard= deepcopy(board)
     
     
@@ -509,11 +556,10 @@ while not checkWin(board):
         for i in range(1,5):
             posi=int(input("entrez poition B"))
             insertValue(currentPlayer, posi)
-            posi=int(input("entrez poition N"))
-            insertValue(machinePlayer, posi)
+            computerset(board,i)
             i=i+1
         debut=0
-   
+
    printBoard(board)   
    playerMove()
    if(currentPlayer=='B'):

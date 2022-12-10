@@ -1,12 +1,9 @@
+from binascii import a2b_qp
+from copy import deepcopy
+from json.encoder import INFINITY
+import os
+from site import ENABLE_USER_SITE
 
-
-
-
-from array import array
-from audioop import cross
-from msilib.schema import Billboard
-from threading import ExceptHookArgs
-from unittest import result
 
 
 board ={1:' ',2:' ',3:' ',4:' ',5:' ',
@@ -115,15 +112,15 @@ def checkWin(board):
             if ( board[i] == board[i+1] and board[i] == board[i+5] and board[i] == board[i+6] and board[i] != ' '):
                 test= True
 
-        for i in range(6,9):
+        for i in range(6,10):
             if ( board[i] == board[i+1] and board[i] == board[i+5] and board[i] == board[i+6] and board[i] != ' '):
                 test= True
 
-        for i in range(11,14):
+        for i in range(11,15):
             if ( board[i] == board[i+1] and board[i] == board[i+5] and board[i] == board[i+6] and board[i] != ' '):
                 test= True
 
-        for i in range(16,19):
+        for i in range(16,20):
             if ( board[i] == board[i+1] and board[i] == board[i+5] and board[i] == board[i+6] and board[i] != ' '):
                 test= True
 
@@ -264,10 +261,157 @@ def playerMove():
     else:
         print("cette case est vide ou ce jeton ne vous appartiens pas")
         playerMove()
-   
 
-def nextBoardList(localboard):
-    global currentPlayer
+
+#Computer Movement
+
+#DEFINITION ALPHA BETA
+def AlphaBeta(board):
+   
+    profondeurtest = 4
+    localboard= deepcopy(board)
+    
+    
+            #DEFINITION DU MAXVALUEA
+    def MaxValue(localboard,profondeur, alpha,beta,bestscore):
+         global board
+         if(checkWin(localboard)==True or profondeur==0):
+                return(eval(localboard))
+
+         resultat= - INFINITY
+         nextplay= nextBoardList(localboard,'N')
+         
+         for i in nextplay:
+             
+             resultat=max(resultat,MinValue(deepcopy(i),profondeur-1,alpha,beta,bestscore))
+             if(resultat>=beta): 
+                 return resultat
+
+             alpha=max(alpha, resultat)
+
+             if(resultat>bestscore and profondeurtest==profondeur):
+                 board=deepcopy(i)
+                 bestscore=resultat
+
+             print(bestscore)
+
+         return resultat
+    
+        #DEFINITION DU MINVALUE
+    def MinValue(localboard,profondeur, alpha,beta,bestscore):
+        if(checkWin(localboard)==True or profondeur==0):
+             return(eval(localboard))
+
+        resultat= + INFINITY
+        nextplay= nextBoardList(localboard,'B')
+        
+
+        for i in nextplay:
+            resultat=min(resultat,MaxValue(deepcopy(i),profondeur-1,alpha,beta,bestscore))
+            if(resultat<=alpha):
+                return resultat
+
+            beta=min(beta, resultat)
+
+            return resultat
+
+    MaxValue(localboard, profondeurtest, -INFINITY, +INFINITY,-INFINITY)
+
+    
+
+
+
+
+
+#Definition de la fonction D'evaluation
+def eval(board):
+    
+    scoreboard={1:1,2:8,3:5,4:8,5:1,
+                6:8,7:10,8:10,9:10,10:8,
+                11:5,12:10,13:20,14:10,15:5,
+                16:8,17:10,18:10,19:10,20:8,
+                21:1,22:8,23:5,24:8,25:1}
+
+    
+    def nombreMovement(localboard,Player):
+        i=0;
+
+        for j in range(1,26):
+            if (localboard[j]==Player):
+
+                if(crossUpright(j)!=False):
+                    if( board[crossUpright(j)]==' '):
+                        i=i+1
+
+                if(crossUpleft(j)!=False):
+                    if( board[crossUpleft(j)]==' '):
+                        i=i+1
+
+                if(crossDownright(j)!=False):
+                    if( board[crossDownright(j)]==' '):
+                        i=i+1
+
+                if(crossDownleft(j)!=False):
+                     if( board[crossDownleft(j)]==' '):
+                        i=i+1
+            
+                if(upMove(j)!=False):
+                    if( board[upMove(j)]==' '): 
+                        i=i+1
+                    
+            
+                if(downMove(j)!=False):
+                    if( localboard[downMove(j)]==' '):
+                        i=i+1
+                   
+                    
+                if(rightMove(j)!=False):
+                    if( board[rightMove(j)]==' '):
+                        i=i+1
+
+                if(leftMove(j)!=False):
+                    if( board[leftMove(j)]==' '):
+                        i=i+1  
+
+        return i
+
+
+    def ScoreBoard(localboard):
+        scoreOrdinateur=0; scoreJoeur=0; 
+        for i in range(1,26):
+            if(localboard[i]=='N'):
+                scoreOrdinateur=scoreOrdinateur+ scoreboard[i]
+            elif(localboard[i]=='B'):
+                scoreJoeur=scoreJoeur+ scoreboard[i]
+
+       
+        NN=nombreMovement(localboard,'N')
+        NB=nombreMovement(localboard,'B')
+        
+
+        
+        if(scoreOrdinateur>=scoreJoeur and NN>=NB):
+            return 0.75
+        elif(scoreOrdinateur<=scoreJoeur and NN>=NB):
+            return 0.5
+        elif(scoreOrdinateur>=scoreJoeur and NN<=NB):
+            return -0.5
+        elif(scoreOrdinateur<=scoreJoeur and NN<=NB):
+            return -0.75
+        else:
+            return 0
+
+    if(checkWin(board)==True and currentPlayer=='N'):
+        return 1
+    elif(checkWin(board)==True and currentPlayer=='B'):
+        return -1
+    else:
+        valeur=ScoreBoard(board)
+        return valeur
+
+
+#DECTION DES PROCHAIN ETAT DE JEUX
+def nextBoardList(localboard,currentPlayer):
     nextPositionList=[ ]
     i=0
     def computerVirtualMove(exposition,newPosition,Virtualboard):
@@ -279,27 +423,6 @@ def nextBoardList(localboard):
     for j in range(1,26):
         #Test des mouvement possible
         if (localboard[j]==currentPlayer):
-            
-            if(upMove(j)!=False):
-                if( board[upMove(j)]==' '): 
-                    nextPositionList=nextPositionList+[[j,upMove(j)]]
-                    i=i+1
-                    
-            
-            if(downMove(j)!=False):
-                if( localboard[downMove(j)]==' '):
-                    nextPositionList=nextPositionList+[[j,downMove(j)]]
-                   
-                    
-            if(rightMove(j)!=False):
-                if( board[rightMove(j)]==' '):
-                    nextPositionList=nextPositionList+[[j,rightMove(j)]]
-                    i=i+1
-
-            if(leftMove(j)!=False):
-                if( board[leftMove(j)]==' '):
-                    nextPositionList=nextPositionList+[[j,leftMove(j)]]
-                    i=i+1
 
             if(crossUpright(j)!=False):
                 if( board[crossUpright(j)]==' '):
@@ -320,79 +443,86 @@ def nextBoardList(localboard):
                  if( board[crossDownleft(j)]==' '):
                     nextPositionList=nextPositionList+[[j,crossDownleft(j)]]
                     i=i+1
-     
-    print(nextPositionList)
+            
+            if(upMove(j)!=False):
+                if( board[upMove(j)]==' '): 
+                    nextPositionList=nextPositionList+[[j,upMove(j)]]
+                    i=i+1
+                    
+            
+            if(downMove(j)!=False):
+                if( localboard[downMove(j)]==' '):
+                    nextPositionList=nextPositionList+[[j,downMove(j)]]
+                    i=i+1
+                   
+                    
+            if(rightMove(j)!=False):
+                if( board[rightMove(j)]==' '):
+                    nextPositionList=nextPositionList+[[j,rightMove(j)]]
+                    i=i+1
+
+            if(leftMove(j)!=False):
+                if( board[leftMove(j)]==' '):
+                    nextPositionList=nextPositionList+[[j,leftMove(j)]]
+                    i=i+1      
+                    
     nextplay=[]   
     for k in range (0,i):
-        localboard=computerVirtualMove(nextPositionList[k][0],nextPositionList[k][1],localboard)
-        nextplay= nextplay+[localboard]
-        print(nextplay)
-        
+        testboard= deepcopy(localboard)
+        testboard=computerVirtualMove(nextPositionList[k][0],nextPositionList[k][1],testboard)
+        nextplay= nextplay+[testboard]
 
-        
-    '''print(nextplay)'''
-    print(i) 
+    return nextplay
 
 
-
-
-#Computer Movement
-def computerMove():
-    exPosition= int(input("Position du point a deplacer N"))
+def computerMove(): 
+    '''exPosition= int(input("Position du point a deplacer N"))
     newPosition = int(input("entrez la position ou aller N "))
     if(board[exPosition]==machinePlayer):
         Movement(exPosition, newPosition)
     else:
         print("cette case est vide ou ce jeton ne vous appartiens pas")
-        computerMove()
+        computerMove()'''
+  
+    global board
+    AlphaBeta(board)
 
-    
+    if(checkWin(board)== True):
+        printBoard(board)
+        print("ordinateur a gange")
+   
 
+'''board ={1:' ',2:'B',3:' ',4:' ',5:' ',
+        6:' ',7:' ',8:' ',9:' ',10:' ',
+        11:' ',12:' ',13:' ',14:' ',15:' ',
+        16:' ',17:' ',18:' ',19:' ',20:' ',
+        21:' ',22:' ',23:' ',24:' ',25:' '}'''
 
 #Test Programme
 
 
 while not checkWin(board):
    
-        # Chargement de Coin ou jeuton de jeux par les joeurs
-    '''if (debut==1):
+       # Chargement de Coin ou jeuton de jeux par les joeurs
+   if (debut==1):
         for i in range(1,5):
             posi=int(input("entrez poition B"))
             insertValue(currentPlayer, posi)
             posi=int(input("entrez poition N"))
             insertValue(machinePlayer, posi)
             i=i+1
-        debut=0'''
-       
-    board ={1:'B',2:'B',3:'B',4:' ',5:'B',
-        6:' ',7:'N',8:'N',9:'N',10:' ',
-        11:'N',12:' ',13:' ',14:' ',15:' ',
-        16:' ',17:' ',18:' ',19:' ',20:' ',
-        21:' ',22:' ',23:' ',24:' ',25:' '}
-       
-    printBoard(board)
-    '''playerMove()
-
-    if(currentPlayer=='B'):
-        currentPlayer='N'
-    else:
-        currentPlayer='B'
-
-    computerMove(board)
-    if(currentPlayer=='N'):
-        currentPlayer='B'
-    else:
-        currentPlayer='N'
-        '''
-
-    currentPlayer='N'
-    boardtest=board
-    nextBoardList(boardtest)
-    printBoard(board)
-    break
-
-
+        debut=0
    
+   printBoard(board)   
+   playerMove()
+   if(currentPlayer=='B'):
+        currentPlayer='N'
+   else:
+        currentPlayer='B'
+   computerMove()
+   if(currentPlayer=='N'):
+        currentPlayer='B'
+   else:
+        currentPlayer='N'
+      
     
-
-

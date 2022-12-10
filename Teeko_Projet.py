@@ -4,7 +4,6 @@ from json.encoder import INFINITY
 import os
 import random
 from site import ENABLE_USER_SITE
-from turtle import position
 
 
 
@@ -14,7 +13,7 @@ board ={1:' ',2:' ',3:' ',4:' ',5:' ',
         16:' ',17:' ',18:' ',19:' ',20:' ',
         21:' ',22:' ',23:' ',24:' ',25:' '}
 
-currentPlayer ='B'
+humanPlayer = 'B'
 machinePlayer='N'
 debut=1
 
@@ -41,21 +40,34 @@ def espaceFree(position):
     else:
         return False
 
+def playerInput():
+
+    valid_input = False
+    while (not valid_input):
+        try:
+            while(not valid_input):
+                posi=int(input("entrez position B: "))
+                if(posi < 1 or posi > 25):
+                    print("position invalide, veuillez resaisir la position")
+                else:
+                    break
+        except ValueError as err:
+            print("entree invalide, veuillez resaisir la position")
+        else:
+            return posi
 
 #Take player input
-def insertValue(color, position):
-    if espaceFree(position):
-        board[position]= color
-        printBoard(board)
-        if checkWin(board)== True:
-           print(color,"gaggne")
-           exit()
-        return
-    else:
-        print("Position Invalide")
-        position= int(input("entrez une nouvelle position"))
-        insertValue(color, position)
-        return
+def insertValue(player, position):
+    if not espaceFree(position):
+        print("position occupee, veuillez resaisir position: ")
+        position = playerInput()
+        insertValue(player, position)
+    board[position]= player
+    printBoard(board)
+    if checkWin(board)== True:
+        print(player,"gaggne")
+        exit()
+
 
 
 #Check for the Win
@@ -257,14 +269,42 @@ def Movement(exPosition, newPosition):
 
 #Player Movemement
 def playerMove():
-    exPosition= int(input("Position du point a deplacer B"))
-    newPosition = int(input("entrez la position ou aller B "))
-    if(board[exPosition]==currentPlayer):
-       Movement(exPosition, newPosition)
-    else:
+    
+    print("Selectionner le pion a deplacer")
+    exPosition= playerInput()
+    
+    while(not board[exPosition]==currentPlayer):
         print("cette case est vide ou ce jeton ne vous appartiens pas")
         playerMove()
 
+    print("Entrer destination B")
+    
+    newPosition = playerInput()
+    while newPosition == exPosition:
+        print("le pion selectionne' doit etre deplacer vers un autre emplacement")
+        newPosition = playerInput()
+    
+    Movement(exPosition, newPosition)
+
+def validMove():
+
+    move = ['A', 'D', 'W', 'X', 'Z', 'E', 'Z', 'C']
+
+
+    print("Selectionner le pion a deplacer")
+    exPosition= playerInput()
+    
+    while(not board[exPosition]==currentPlayer):
+        print("cette case est vide ou ce jeton ne vous appartiens pas")
+        playerMove()
+
+    
+    keyboard_input = input("Bouger B vers: ")
+    keyboard_input = keyboard_input.upper
+
+    for index in range(8):
+        if keyboard_input == move[0]:
+            newPosition = exPosition + 1
 
 #Computer Movement
 
@@ -549,29 +589,31 @@ def computerMove():
 #Test Programme
 
 
+
+
+
 while not checkWin(board):
-   
        # Chargement de Coin ou jeuton de jeux par les joeurs
-   if (debut==1):
+    
+    currentPlayer = humanPlayer
+
+    #debut du jeu: pose de 4 premiers pions
+    if (debut==1):
         for i in range(1,5):
-            posi=int(input("entrez poition B"))
+        
+            posi = playerInput()
             insertValue(currentPlayer, posi)
             computerset(board,i)
             i=i+1
-        debut=0
+        debut = 0
+        
+    #fin pose de 4 premiers pions
 
-   printBoard(board)   
-   playerMove()
-   if(currentPlayer=='B'):
-        currentPlayer='N'
-   else:
-        currentPlayer='B'
-
-   os.system("pause")
-   computerMove()
-   if(currentPlayer=='N'):
-        currentPlayer='B'
-   else:
-        currentPlayer='N'
-      
+    printBoard(board)   
+    playerMove()
     
+    currentPlayer = machinePlayer
+    os.system("pause")
+    computerMove()
+
+      

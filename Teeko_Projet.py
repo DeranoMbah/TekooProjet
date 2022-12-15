@@ -65,7 +65,7 @@ def insertValue(player, position):
     board[position]= player
     printBoard(board)
     if checkWin(board)== True:
-        print(player,"gaggne")
+        print(player + " gagne")
         exit()
 
 
@@ -265,46 +265,106 @@ def Movement(exPosition, newPosition):
          insertValue(currentPlayer,newPosition)
      else:
          print("deplacement pas possible ")
-         playerMove()
+         Movement(exPosition, newPosition)
 
-#Player Movemement
+
+#nouvelle fonction Player Movement
 def playerMove():
+
+
+    while(1):
+        print("Selectionner le pion a deplacer")
+        exPosition = playerInput()
     
-    print("Selectionner le pion a deplacer")
-    exPosition= playerInput()
-    
-    while(not board[exPosition]==currentPlayer):
-        print("cette case est vide ou ce jeton ne vous appartiens pas")
-        playerMove()
-
-    print("Entrer destination B")
-    
-    newPosition = playerInput()
-    while newPosition == exPosition:
-        print("le pion selectionne' doit etre deplacer vers un autre emplacement")
-        newPosition = playerInput()
-    
-    Movement(exPosition, newPosition)
-
-def validMove():
-
-    move = ['A', 'D', 'W', 'X', 'Z', 'E', 'Z', 'C']
+        while(board[exPosition] is not currentPlayer):
+            print("cette case est vide ou ce jeton ne vous appartiens pas: ")
+            exPosition = playerInput()
 
 
-    print("Selectionner le pion a deplacer")
-    exPosition= playerInput()
-    
-    while(not board[exPosition]==currentPlayer):
-        print("cette case est vide ou ce jeton ne vous appartiens pas")
-        playerMove()
+        keyboard_input = input("Bouger B vers: ")
+        keyboard_input = keyboard_input.upper()
 
-    
-    keyboard_input = input("Bouger B vers: ")
-    keyboard_input = keyboard_input.upper
-
-    for index in range(8):
-        if keyboard_input == move[0]:
+        if keyboard_input == 'D': #droit
             newPosition = exPosition + 1
+            if not bord_droit(exPosition) and espaceFree(newPosition):
+                board[newPosition] = currentPlayer
+                break
+
+        elif keyboard_input == 'G': #gauche
+            newPosition = exPosition -1
+            if not bord_gauche(exPosition) and espaceFree(newPosition):
+                board[newPosition] = currentPlayer
+                break
+        
+        elif keyboard_input == 'H': #haut
+            newPosition = exPosition - 5
+            if not bord_haut(exPosition) and espaceFree(newPosition):
+                board[newPosition] = currentPlayer
+                break
+
+        elif keyboard_input == 'B': #bas
+            newPosition = exPosition + 5
+            if not bord_bas(exPosition) and espaceFree(newPosition):
+                board[newPosition] = currentPlayer
+                break
+
+        elif keyboard_input == 'Q': #cross up left
+            newPosition = exPosition - 6
+            if not bord_haut(exPosition) and not bord_gauche(exPosition) and espaceFree(newPosition):
+                board[newPosition] = currentPlayer
+                break
+
+        elif keyboard_input == 'E': #cross up right
+            newPosition = exPosition -4
+            if not bord_haut(exPosition) and not bord_droit(exPosition) and espaceFree(newPosition):
+                board[newPosition] = currentPlayer
+                break
+
+        elif keyboard_input == 'Z': #cross down left
+            newPosition = exPosition + 4
+            if not bord_bas(exPosition) and not bord_gauche(exPosition) and espaceFree(newPosition):
+                board[newPosition] = currentPlayer
+                break
+        
+        elif keyboard_input == 'X': #cross down right
+            newPosition = exPosition + 6
+            if not bord_bas(exPosition) and not bord_droit(exPosition) and espaceFree(newPosition):
+                board[newPosition] = currentPlayer
+                break
+
+        else:
+            print("mouvement invalide")
+    
+    board[exPosition] = ' '
+
+   
+
+
+
+#pion sur le bord haut
+def bord_haut(position):
+    if position - 5 < 1:
+        return True
+    return False
+
+#pion sur le bord bas
+def bord_bas(position):
+    if position + 5 > 25:
+        return True
+    return False
+
+#pion sur le bord gauche
+def bord_gauche(position):
+    if position % 5 == 1:
+        return True
+    return False
+
+#pion sur le bord droit
+def bord_droit(position):
+    if position % 5 == 0:
+        return True
+    return False
+
 
 #Computer Movement
 
@@ -347,35 +407,25 @@ def computerset(board,compteur):
             
 
 
-
-         
-    
-
-
-
 #DEFINITION ALPHA BETA
 def AlphaBeta(board):
    
-    profondeurtest = 5
+    profondeurtest = 2
     localboard= deepcopy(board)
-    profondeurSolution=0
     
     
             #DEFINITION DU MAXVALUEA
-    def MaxValue(localboard,profondeur, alpha,beta,bestscore,profondeurSolution):
-         newprofondeur=profondeurSolution;
+    def MaxValue(localboard,profondeur, alpha,beta,bestscore):
          global board
          if(checkWin(localboard)==True or profondeur==0):
-             if(checkWin(localboard)==True):
-                 profondeurSolution=5-profondeur
-             return(eval(localboard))
+                return(eval(localboard))
 
          resultat= - INFINITY
          nextplay= nextBoardList(localboard,'N')
          
          for i in nextplay:
-
-             resultat=max(resultat,MinValue(deepcopy(i),profondeur-1,alpha,beta,bestscore,profondeurSolution))
+             
+             resultat=max(resultat,MinValue(deepcopy(i),profondeur-1,alpha,beta,bestscore))
              if(resultat>=beta): 
                  return resultat
 
@@ -384,18 +434,13 @@ def AlphaBeta(board):
              if(resultat>bestscore and profondeurtest==profondeur):
                  board=deepcopy(i)
                  bestscore=resultat
-             elif(resultat==bestscore and profondeurtest==profondeur  and profondeurSolution<newprofondeur):
-                 board=deepcopy(i)
-                 bestscore=resultat
-                 newprofondeur =profondeurSolution
 
-             
-             print(bestscore," ",profondeurSolution)
+             print(bestscore)
 
          return resultat
     
         #DEFINITION DU MINVALUE
-    def MinValue(localboard,profondeur, alpha,beta,bestscore,profondeurSolution):
+    def MinValue(localboard,profondeur, alpha,beta,bestscore):
         if(checkWin(localboard)==True or profondeur==0):
              return(eval(localboard))
 
@@ -404,7 +449,7 @@ def AlphaBeta(board):
         
 
         for i in nextplay:
-            resultat=min(resultat,MaxValue(deepcopy(i),profondeur-1,alpha,beta,bestscore, profondeurSolution))
+            resultat=min(resultat,MaxValue(deepcopy(i),profondeur-1,alpha,beta,bestscore))
             if(resultat<=alpha):
                 return resultat
 
@@ -412,7 +457,7 @@ def AlphaBeta(board):
 
             return resultat
 
-    MaxValue(localboard, profondeurtest, -INFINITY, +INFINITY,-INFINITY,profondeurtest)
+    MaxValue(localboard, profondeurtest, -INFINITY, +INFINITY,-INFINITY)
 
     
 
@@ -572,28 +617,22 @@ def nextBoardList(localboard,currentPlayer):
     return nextplay
 
 
+# Definition de COMPUTER MOVE
 def computerMove(): 
-    '''exPosition= int(input("Position du point a deplacer N"))
-    newPosition = int(input("entrez la position ou aller N "))
-    if(board[exPosition]==machinePlayer):
-        Movement(exPosition, newPosition)
-    else:
-        print("cette case est vide ou ce jeton ne vous appartiens pas")
-        computerMove()'''
-  
+
     global board
     AlphaBeta(board)
 
     if(checkWin(board)== True):
         printBoard(board)
-        print("ordinateur a gange")
+        print(currentPlayer + " a gange")
    
 
-'''board ={1:' ',2:'B',3:' ',4:' ',5:' ',
-        6:' ',7:' ',8:' ',9:' ',10:' ',
-        11:' ',12:' ',13:' ',14:' ',15:' ',
+board ={1:'B',2:' ',3:' ',4:' ',5:' ',
+        6:' ',7:'N',8:'N',9:' ',10:' ',
+        11:'B',12:' ',13:'N',14:' ',15:' ',
         16:' ',17:' ',18:' ',19:' ',20:' ',
-        21:' ',22:' ',23:' ',24:' ',25:' '}'''
+        21:' ',22:'N',23:' ',24:' ',25:' '}
 
 #Test Programme
 
@@ -606,7 +645,7 @@ while not checkWin(board):
     
     currentPlayer = humanPlayer
 
-    #debut du jeu: pose de 4 premiers pions
+    '''#debut du jeu: pose de 4 premiers pions
     if (debut==1):
         for i in range(1,5):
         
@@ -614,13 +653,16 @@ while not checkWin(board):
             insertValue(currentPlayer, posi)
             computerset(board,i)
             i=i+1
-        debut = 0
+        debut = 0'''
         
     #fin pose de 4 premiers pions
 
     printBoard(board)   
     playerMove()
-    
+    if checkWin(board):
+        printBoard(board)
+        print(currentPlayer + " a gagne!")
+        exit()
     currentPlayer = machinePlayer
     os.system("pause")
     computerMove()

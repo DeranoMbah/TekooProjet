@@ -265,7 +265,7 @@ def Movement(exPosition, newPosition):
          insertValue(currentPlayer,newPosition)
      else:
          print("deplacement pas possible ")
-         Movement(exPosition, newPosition)
+         playerMove()
 
 #Player Movemement
 def playerMove():
@@ -358,20 +358,24 @@ def AlphaBeta(board):
    
     profondeurtest = 5
     localboard= deepcopy(board)
+    profondeurSolution=0
     
     
             #DEFINITION DU MAXVALUEA
-    def MaxValue(localboard,profondeur, alpha,beta,bestscore):
+    def MaxValue(localboard,profondeur, alpha,beta,bestscore,profondeurSolution):
+         newprofondeur=profondeurSolution;
          global board
          if(checkWin(localboard)==True or profondeur==0):
-                return(eval(localboard))
+             if(checkWin(localboard)==True):
+                 profondeurSolution=5-profondeur
+             return(eval(localboard))
 
          resultat= - INFINITY
          nextplay= nextBoardList(localboard,'N')
          
          for i in nextplay:
-             
-             resultat=max(resultat,MinValue(deepcopy(i),profondeur-1,alpha,beta,bestscore))
+
+             resultat=max(resultat,MinValue(deepcopy(i),profondeur-1,alpha,beta,bestscore,profondeurSolution))
              if(resultat>=beta): 
                  return resultat
 
@@ -380,13 +384,18 @@ def AlphaBeta(board):
              if(resultat>bestscore and profondeurtest==profondeur):
                  board=deepcopy(i)
                  bestscore=resultat
+             elif(resultat==bestscore and profondeurtest==profondeur  and profondeurSolution<newprofondeur):
+                 board=deepcopy(i)
+                 bestscore=resultat
+                 newprofondeur =profondeurSolution
 
-             print(bestscore)
+             
+             print(bestscore," ",profondeurSolution)
 
          return resultat
     
         #DEFINITION DU MINVALUE
-    def MinValue(localboard,profondeur, alpha,beta,bestscore):
+    def MinValue(localboard,profondeur, alpha,beta,bestscore,profondeurSolution):
         if(checkWin(localboard)==True or profondeur==0):
              return(eval(localboard))
 
@@ -395,7 +404,7 @@ def AlphaBeta(board):
         
 
         for i in nextplay:
-            resultat=min(resultat,MaxValue(deepcopy(i),profondeur-1,alpha,beta,bestscore))
+            resultat=min(resultat,MaxValue(deepcopy(i),profondeur-1,alpha,beta,bestscore, profondeurSolution))
             if(resultat<=alpha):
                 return resultat
 
@@ -403,7 +412,7 @@ def AlphaBeta(board):
 
             return resultat
 
-    MaxValue(localboard, profondeurtest, -INFINITY, +INFINITY,-INFINITY)
+    MaxValue(localboard, profondeurtest, -INFINITY, +INFINITY,-INFINITY,profondeurtest)
 
     
 

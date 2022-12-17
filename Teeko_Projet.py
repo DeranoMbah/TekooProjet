@@ -16,6 +16,8 @@ board ={1:' ',2:' ',3:' ',4:' ',5:' ',
 humanPlayer = 'B'
 machinePlayer='N'
 debut=1
+scoreprofondeur=0;
+newscoreprofondeur=0
 
 
 # Printing de Borad Games
@@ -404,27 +406,31 @@ def computerset(board,compteur):
             print("Ordinatuer a gagne")
             exit()
                    
-            
 
 
 #DEFINITION ALPHA BETA
 def AlphaBeta(board):
-   
-    profondeurtest = 2
+    global scoreprofondeur
+    global newscoreprofondeur
+    profondeurtest = 3
     localboard= deepcopy(board)
+    newscoreprofondeur= profondeurtest
+    scoreprofondeur = profondeurtest
     
     
             #DEFINITION DU MAXVALUEA
     def MaxValue(localboard,profondeur, alpha,beta,bestscore):
          global board
+         global newscoreprofondeur
          if(checkWin(localboard)==True or profondeur==0):
-                return(eval(localboard))
+
+             return(eval(localboard,profondeur))
 
          resultat= - INFINITY
          nextplay= nextBoardList(localboard,'N')
          
+         
          for i in nextplay:
-             
              resultat=max(resultat,MinValue(deepcopy(i),profondeur-1,alpha,beta,bestscore))
              if(resultat>=beta): 
                  return resultat
@@ -434,18 +440,31 @@ def AlphaBeta(board):
              if(resultat>bestscore and profondeurtest==profondeur):
                  board=deepcopy(i)
                  bestscore=resultat
+             elif(resultat==bestscore and profondeurtest==profondeur and newscoreprofondeur<scoreprofondeur):
+                 board=deepcopy(i)
+                 bestscore=resultat
+                 newscoreprofondeur=scoreprofondeur
 
-             print(bestscore)
+             print(newscoreprofondeur," ",scoreprofondeur," ",bestscore)
+                    
+
+                      
+                     
+
+
+                
+             #print(bestscore)
 
          return resultat
     
         #DEFINITION DU MINVALUE
     def MinValue(localboard,profondeur, alpha,beta,bestscore):
         if(checkWin(localboard)==True or profondeur==0):
-             return(eval(localboard))
+            return(eval(localboard,profondeur))
 
         resultat= + INFINITY
         nextplay= nextBoardList(localboard,'B')
+        
         
 
         for i in nextplay:
@@ -466,7 +485,8 @@ def AlphaBeta(board):
 
 
 #Definition de la fonction D'evaluation
-def eval(board):
+def eval(board, profondeur):
+    global scoreprofondeur
     
     scoreboard={1:1,2:8,3:5,4:8,5:1,
                 6:8,7:10,8:10,9:10,10:8,
@@ -544,6 +564,7 @@ def eval(board):
             return 0
 
     if(checkWin(board)==True and currentPlayer=='N'):
+        scoreprofondeur=3-profondeur
         return 1
     elif(checkWin(board)==True and currentPlayer=='B'):
         return -1
@@ -628,11 +649,11 @@ def computerMove():
         print(currentPlayer + " a gange")
    
 
-board ={1:'B',2:' ',3:' ',4:' ',5:' ',
-        6:' ',7:'N',8:'N',9:' ',10:' ',
-        11:'B',12:' ',13:'N',14:' ',15:' ',
+'''board ={1:' ',2:' ',3:' ',4:' ',5:' ',
+        6:' ',7:'B',8:'B',9:' ',10:' ',
+        11:'B',12:'N',13:'N',14:'B',15:' ',
         16:' ',17:' ',18:' ',19:' ',20:' ',
-        21:' ',22:'N',23:' ',24:' ',25:' '}
+        21:'N',22:' ',23:' ',24:'N',25:' '}'''
 
 #Test Programme
 
@@ -645,15 +666,15 @@ while not checkWin(board):
     
     currentPlayer = humanPlayer
 
-    '''#debut du jeu: pose de 4 premiers pions
+    #debut du jeu: pose de 4 premiers pions
     if (debut==1):
         for i in range(1,5):
-        
+            computerset(board,i)
             posi = playerInput()
             insertValue(currentPlayer, posi)
-            computerset(board,i)
+            
             i=i+1
-        debut = 0'''
+        debut = 0
         
     #fin pose de 4 premiers pions
 

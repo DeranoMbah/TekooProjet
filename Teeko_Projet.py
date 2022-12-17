@@ -679,13 +679,14 @@ while not checkWin(board):
     #fin pose de 4 premiers pions
 
     printBoard(board)   
-    playerMove()
+    
     if checkWin(board):
         printBoard(board)
         print(currentPlayer + " a gagne!")
         exit()
     currentPlayer = machinePlayer
-    os.system("pause")
     computerMove()
+    currentPlayer = humanPlayer
+    playerMove()
 
       

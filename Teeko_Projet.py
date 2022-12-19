@@ -370,12 +370,15 @@ def bord_droit(position):
 
 #Computer Movement
 
+
+
 #POSE DES PIONS ORDINATEUR
-def computerset(board,compteur):
+def computerset(localboard,compteur):
+    global board
     scoreboard={1:1,2:8,3:5,4:8,5:1,
-                6:8,7:10,8:10,9:10,10:8,
-                11:5,12:10,13:20,14:10,15:5,
-                16:8,17:10,18:10,19:10,20:8,
+                6:8,7:10,8:15,9:10,10:8,
+                11:5,12:15,13:20,14:15,15:5,
+                16:8,17:10,18:15,19:10,20:8,
                 21:1,22:8,23:5,24:8,25:1}
     global machinePlayer
     position=0
@@ -386,30 +389,17 @@ def computerset(board,compteur):
                 score=scoreboard[i]
                 position=i
             
-        board[position]= machinePlayer
-        printBoard(board)
+        localboard[position]= machinePlayer
+        printBoard(localboard)
     elif(compteur==4):
-        for i in range(1,26):
-            tab=deepcopy(board)
-            if espaceFree(i):
-                tab[i]= machinePlayer
-                if(checkWin(tab)==True):
-                    position=i
-                    break
-  
-            if(i==25):
-                computerset(board,5)
-            
-        board[position]= machinePlayer
+        "STAND BEY"
+        AlphaBeta(board,True)
         printBoard(board)
-        if(checkWin(board)):
-            print("Ordinatuer a gagne")
-            exit()
-                   
-
+    
+               
 
 #DEFINITION ALPHA BETA
-def AlphaBeta(board):
+def AlphaBeta(board, pose):
     global scoreprofondeur
     global newscoreprofondeur
     profondeurtest = 3
@@ -417,6 +407,17 @@ def AlphaBeta(board):
     newscoreprofondeur= profondeurtest
     scoreprofondeur = profondeurtest
     
+    def nextset(localboard,currentPlayer):
+        next=[]
+        for i in range(1,26):
+            localvalue=deepcopy(board)
+            if(localboard[i]==' '):
+                localvalue[i]=currentPlayer
+                next=next+[deepcopy(localvalue)]
+             
+        return next
+
+
     
             #DEFINITION DU MAXVALUEA
     def MaxValue(localboard,profondeur, alpha,beta,bestscore):
@@ -427,8 +428,10 @@ def AlphaBeta(board):
              return(eval(localboard,profondeur))
 
          resultat= - INFINITY
-         nextplay= nextBoardList(localboard,'N')
-         
+         if(pose==True):
+            nextplay= nextset(deepcopy(localboard),'N')
+         else:
+            nextplay= nextBoardList(localboard,'N')
          
          for i in nextplay:
              resultat=max(resultat,MinValue(deepcopy(i),profondeur-1,alpha,beta,bestscore))
@@ -449,11 +452,6 @@ def AlphaBeta(board):
 
              print(newscoreprofondeur," ",scoreprofondeur," ",bestscore)
                     
-
-                      
-                     
-
-
                 
              #print(bestscore)
 
@@ -465,8 +463,10 @@ def AlphaBeta(board):
             return(eval(localboard,profondeur))
 
         resultat= + INFINITY
-        nextplay= nextBoardList(localboard,'B')
-        
+        if(pose==True):
+            nextplay= nextset(deepcopy(localboard),'B')
+        else:
+            nextplay= nextBoardList(localboard,'B')
         
 
         for i in nextplay:
@@ -491,9 +491,9 @@ def eval(board, profondeur):
     global scoreprofondeur
     
     scoreboard={1:1,2:8,3:5,4:8,5:1,
-                6:8,7:10,8:10,9:10,10:8,
-                11:5,12:10,13:20,14:10,15:5,
-                16:8,17:10,18:10,19:10,20:8,
+                6:8,7:10,8:15,9:10,10:8,
+                11:5,12:15,13:20,14:15,15:5,
+                16:8,17:10,18:15,19:10,20:8,
                 21:1,22:8,23:5,24:8,25:1}
 
     
@@ -571,8 +571,8 @@ def eval(board, profondeur):
     elif(checkWin(board)==True and currentPlayer=='B'):
         return -1
     else:
-        #valeur=ScoreBoard(board)
-        return 0
+        valeur=ScoreBoard(board)
+        return valeur
 
 
 #DECTION DES PROCHAIN ETAT DE JEUX
@@ -644,7 +644,7 @@ def nextBoardList(localboard,currentPlayer):
 def computerMove(): 
 
     global board
-    AlphaBeta(board)
+    AlphaBeta(board,False)
 
     if(checkWin(board)== True):
         printBoard(board)

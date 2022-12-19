@@ -16,7 +16,7 @@ board ={1:' ',2:' ',3:' ',4:' ',5:' ',
 humanPlayer = 'B'
 machinePlayer='N'
 debut=1
-scoreprofondeur=0;
+scoreprofondeur=0
 newscoreprofondeur=0
 
 
@@ -440,10 +440,12 @@ def AlphaBeta(board):
              if(resultat>bestscore and profondeurtest==profondeur):
                  board=deepcopy(i)
                  bestscore=resultat
-             elif(resultat==bestscore and profondeurtest==profondeur and newscoreprofondeur<scoreprofondeur):
+
+             if(resultat==1 and bestscore==1 and profondeurtest==profondeur and newscoreprofondeur>scoreprofondeur):
                  board=deepcopy(i)
                  bestscore=resultat
                  newscoreprofondeur=scoreprofondeur
+
 
              print(newscoreprofondeur," ",scoreprofondeur," ",bestscore)
                     
@@ -655,38 +657,78 @@ def computerMove():
         16:' ',17:' ',18:' ',19:' ',20:' ',
         21:'N',22:' ',23:' ',24:'N',25:' '}'''
 
-#Test Programme
 
 
-
+starter = int(input("Desirer vous etre le premier a jouer: 1. oui   -   2. non"))
 
 
 while not checkWin(board):
        # Chargement de Coin ou jeuton de jeux par les joeurs
     
-    currentPlayer = humanPlayer
+    #IA BEGIN
+    if starter == 2:
+        currentPlayer = humanPlayer
 
-    #debut du jeu: pose de 4 premiers pions
-    if (debut==1):
-        for i in range(1,5):
-            computerset(board,i)
-            posi = playerInput()
-            insertValue(currentPlayer, posi)
+        #debut du jeu: pose de 4 premiers pions
+        if (debut==1):
+            for i in range(1,5):
+                computerset(board,i)
+                posi = playerInput()
+                insertValue(currentPlayer, posi)
+                
+                i=i+1
+            debut = 0
             
-            i=i+1
-        debut = 0
-        
-    #fin pose de 4 premiers pions
+        #fin pose de 4 premiers pions
 
-    printBoard(board)   
-    
-    if checkWin(board):
+        printBoard(board)   
+        
+        currentPlayer = machinePlayer
+        computerMove()
+        if checkWin(board):
+            printBoard(board)
+            print(currentPlayer + " a gagne!")
+            exit()
+        currentPlayer = humanPlayer
         printBoard(board)
-        print(currentPlayer + " a gagne!")
-        exit()
-    currentPlayer = machinePlayer
-    computerMove()
-    currentPlayer = humanPlayer
-    playerMove()
+        playerMove()
+        if checkWin(board):
+            printBoard(board)
+            print(currentPlayer + " a gagne!")
+            exit()
+
+    #PLAYER BEGIN
+    else:
+
+        currentPlayer = humanPlayer
+
+        #debut du jeu: pose de 4 premiers pions
+        if (debut==1):
+            for i in range(1,5):
+                posi = playerInput()
+                insertValue(currentPlayer, posi)
+                computerset(board,i)
+                i=i+1
+            debut = 0
+            
+        #fin pose de 4 premiers pions
+
+        printBoard(board)   
+        playerMove()
+        if checkWin(board):
+            printBoard(board)
+            print(currentPlayer + " a gagne!")
+            exit()
+        currentPlayer = machinePlayer
+        computerMove()
+        printBoard(board)
+
+        if checkWin(board):
+            printBoard(board)
+            print(currentPlayer + " a gagne!")
+            exit()
+
+
+
 
       

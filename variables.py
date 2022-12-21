@@ -11,6 +11,7 @@ debut=1
 scoreprofondeur=0
 newscoreprofondeur=0
 currentPlayer = None
+profondeurvariable=0
 
 resultboard ={1:' ',2:' ',3:' ',4:' ',5:' ',
         6:' ',7:' ',8:' ',9:' ',10:' ',

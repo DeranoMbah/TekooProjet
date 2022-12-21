@@ -35,11 +35,12 @@ while not checkWin(globalboard):
         #debut du jeu: pose de 4 premiers pions
         if (debut==1):
             for i in range(1,5):
-                computerset(globalboard,i)
+                print("jeu ", i)
+                globalboard= deepcopy(computerset(globalboard,i))
                 posi = playerInput()
-                insertValue(currentPlayer, posi)
-                
-                i=i+1
+                insertValue(globalboard,currentPlayer, posi)
+                #i=i+1
+
             debut = 0
             
         #fin pose de 4 premiers pions  
@@ -66,10 +67,11 @@ while not checkWin(globalboard):
         #debut du jeu: pose de 4 premiers pions
         if (debut==1):
             for i in range(1,5):
+                print("jeu ", i)
                 posi = playerInput()
-                insertValue(currentPlayer, posi)
-                computerset(globalboard,i)
-                i=i+1
+                insertValue(globalboard,currentPlayer, posi)
+                globalboard= deepcopy(computerset(globalboard,i))
+                #i=i+1
             debut = 0
             
         #fin pose de 4 premiers pions

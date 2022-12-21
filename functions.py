@@ -41,14 +41,13 @@ def playerInput():
         
 
 #Take player input
-def insertValue(player, position):
-    if not espaceFree(position, globalboard):
+def insertValue(localboard, player, position):
+    while not espaceFree(position, localboard):
         print("position occupee, veuillez resaisir position: ")
         position = playerInput()
-        insertValue(player, position)
-    globalboard[position]= player
-    printBoard(globalboard)
-    if checkWin(globalboard)== True:
+    localboard[position]= player
+    printBoard(localboard)
+    if checkWin(localboard)== True:
         print(player + " gagne")
         exit()
 
@@ -191,7 +190,6 @@ def playerMove(currentPlayer, localboard):
                 break
 
         else:
-            print(espaceFree(1), globalboard[1])
             print("mouvement invalide")
     
     localboard[exPosition] = ' '

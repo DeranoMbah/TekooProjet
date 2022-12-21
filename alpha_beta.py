@@ -38,12 +38,12 @@ def AlphaBeta(board, pose):
                  resultboard=deepcopy(i)
                  bestscore=resultat
 
-             if(resultat==1 and bestscore==1 and profondeurtest==profondeur and newscoreprofondeur>scoreprofondeur):
+             if(resultat==bestscore and profondeurtest==profondeur and newscoreprofondeur>scoreprofondeur):
                  resultboard=deepcopy(i)
                  bestscore=resultat
                  newscoreprofondeur=scoreprofondeur
 
-             print(newscoreprofondeur, scoreprofondeur, bestscore)
+             print(scoreprofondeur, newscoreprofondeur, bestscore)
 
          return resultat
     
@@ -72,8 +72,14 @@ def AlphaBeta(board, pose):
 
     global scoreprofondeur
     global newscoreprofondeur
-    profondeurtest = 3
+    global profondeurvariable
+    if(pose==True):
+        profondeurtest = 3
+    else:
+        profondeurtest = 3
+
     localboard= deepcopy(board)
+    profondeurvariable = profondeurtest
     newscoreprofondeur= profondeurtest
     scoreprofondeur = profondeurtest
 
@@ -88,6 +94,7 @@ def AlphaBeta(board, pose):
 #Definition de la fonction D'evaluation
 def eval(board, profondeur, CurrentLocal):
     global scoreprofondeur
+    global profondeurvariable
     scoreboard={1:1,2:8,3:5,4:8,5:1,
                 6:8,7:15,8:15,9:15,10:8,
                 11:5,12:15,13:20,14:15,15:5,
@@ -164,13 +171,15 @@ def eval(board, profondeur, CurrentLocal):
             return 0
 
     if(checkWin(board)==True and CurrentLocal=='N'):
-        scoreprofondeur=3-profondeur
+        scoreprofondeur=profondeurvariable-profondeur
         return 1
     elif(checkWin(board)==True and CurrentLocal=='B'):
         return -1
     else:
-        #valeur=ScoreBoard(board)
-        return 0
+        valeur=ScoreBoard(board)
+        return valeur
+
+
 #Right Move
 def rightMove(exPosition):
     if (exPosition<5 and exPosition>=1):
@@ -255,14 +264,14 @@ def crossDownleft(exPosition):
 #POSE DES PIONS ORDINATEUR
 def computerset(localboard,compteur):
     scoreboard={1:1,2:8,3:5,4:8,5:1,
-                6:8,7:10,8:10,9:15,10:8,
+                6:8,7:10,8:15,9:15,10:8,
                 11:5,12:15,13:20,14:15,15:5,
                 16:8,17:10,18:15,19:10,20:8,
                 21:1,22:8,23:5,24:8,25:1}
     global machinePlayer
     position=0
     score=0
-    if(compteur <=4):
+    if(compteur<2):
         for i in range(1,26):
             if (espaceFree(i,localboard) and scoreboard[i]>score):
                 score=scoreboard[i]
@@ -270,11 +279,16 @@ def computerset(localboard,compteur):
             
         localboard[position]= machinePlayer
         printBoard(localboard)
-
-    '''elif(compteur==4):
+        return localboard
+    else:
         "STAND BEY"
-        AlphaBeta(localboard,True,localboard)
-        printBoard(localboard)'''
+        localboard=deepcopy(AlphaBeta(localboard,True))
+        printBoard(localboard)
+        if checkWin(localboard):
+                print("Ordinateur a gagne!")
+                exit()
+
+        return localboard
 
 #DETECTION DES PROCHAIN ETAT DE JEUX
 def nextBoardList(localboard,currentPlayer):

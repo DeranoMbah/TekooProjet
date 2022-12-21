@@ -17,7 +17,7 @@ def AlphaBeta(board, pose):
          global newscoreprofondeur
          if(checkWin(localboard)==True or profondeur==0):
 
-             return(eval(localboard,profondeur))
+             return(eval(localboard,profondeur,'B'))
 
          resultat= - INFINITY
          if(pose==True):
@@ -25,6 +25,8 @@ def AlphaBeta(board, pose):
          else:
             nextplay= nextBoardList(localboard,'N')
          
+
+
          for i in nextplay:
              resultat=max(resultat,MinValue(deepcopy(i),profondeur-1,alpha,beta,bestscore))
              if(resultat>=beta): 
@@ -48,7 +50,7 @@ def AlphaBeta(board, pose):
         #DEFINITION DU MINVALUE
     def MinValue(localboard,profondeur, alpha,beta,bestscore):
         if(checkWin(localboard)==True or profondeur==0):
-            return(eval(localboard,profondeur))
+            return(eval(localboard,profondeur,'N'))
 
         resultat= + INFINITY
         if(pose==True):
@@ -74,17 +76,8 @@ def AlphaBeta(board, pose):
     localboard= deepcopy(board)
     newscoreprofondeur= profondeurtest
     scoreprofondeur = profondeurtest
-    
-    def nextset(localboard,currentPlayer):
-        next=[]
-        for i in range(1,26):
-            localvalue=deepcopy(board)
-            if(localboard[i]==' '):
-                localvalue[i]=currentPlayer
-                next=next+[deepcopy(localvalue)]
-             
-        return next
 
+    
 
     MaxValue(localboard, profondeurtest, -INFINITY, +INFINITY,-INFINITY)
     return resultboard
@@ -93,10 +86,10 @@ def AlphaBeta(board, pose):
 
 
 #Definition de la fonction D'evaluation
-def eval(board, profondeur):
-    global newscoreprofondeur
+def eval(board, profondeur, CurrentLocal):
+    global scoreprofondeur
     scoreboard={1:1,2:8,3:5,4:8,5:1,
-                6:8,7:10,8:15,9:10,10:8,
+                6:8,7:15,8:15,9:15,10:8,
                 11:5,12:15,13:20,14:15,15:5,
                 16:8,17:10,18:15,19:10,20:8,
                 21:1,22:8,23:5,24:8,25:1}
@@ -170,10 +163,10 @@ def eval(board, profondeur):
         else:
             return 0
 
-    if(checkWin(board)==True and currentPlayer=='N'):
+    if(checkWin(board)==True and CurrentLocal=='N'):
         scoreprofondeur=3-profondeur
         return 1
-    elif(checkWin(board)==True and currentPlayer=='B'):
+    elif(checkWin(board)==True and CurrentLocal=='B'):
         return -1
     else:
         #valeur=ScoreBoard(board)
@@ -262,7 +255,7 @@ def crossDownleft(exPosition):
 #POSE DES PIONS ORDINATEUR
 def computerset(localboard,compteur):
     scoreboard={1:1,2:8,3:5,4:8,5:1,
-                6:8,7:10,8:15,9:10,10:8,
+                6:8,7:10,8:10,9:15,10:8,
                 11:5,12:15,13:20,14:15,15:5,
                 16:8,17:10,18:15,19:10,20:8,
                 21:1,22:8,23:5,24:8,25:1}
@@ -348,7 +341,16 @@ def nextBoardList(localboard,currentPlayer):
     return nextplay
 
 
-
+# Prochain etat de pose 
+def nextset(localboard,currentPlayer):
+        next=[]
+        for i in range(1,26):
+            localvalue=deepcopy(localboard)
+            if(localboard[i]==' '):
+                localvalue[i]=currentPlayer
+                next=next+[deepcopy(localvalue)]
+             
+        return next
 
 # Definition de COMPUTER MOVE
 def computerMove(board): 

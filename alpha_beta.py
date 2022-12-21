@@ -94,7 +94,6 @@ def AlphaBeta(board, pose):
 
 #Definition de la fonction D'evaluation
 def eval(board, profondeur):
-    global scoreprofondeur
     
     scoreboard={1:1,2:8,3:5,4:8,5:1,
                 6:8,7:10,8:15,9:10,10:8,
@@ -177,8 +176,8 @@ def eval(board, profondeur):
     elif(checkWin(board)==True and currentPlayer=='B'):
         return -1
     else:
-        valeur=ScoreBoard(board)
-        return valeur
+        #valeur=ScoreBoard(board)
+        return 0
 #Right Move
 def rightMove(exPosition):
     if (exPosition<5 and exPosition>=1):
@@ -272,7 +271,7 @@ def computerset(localboard,compteur):
     score=0
     if(compteur <=4):
         for i in range(1,26):
-            if (espaceFree(i) and scoreboard[i]>score):
+            if (espaceFree(i,localboard) and scoreboard[i]>score):
                 score=scoreboard[i]
                 position=i
             

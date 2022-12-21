@@ -17,7 +17,7 @@ def printBoard(board):
 
 # Space IS FREE
 def espaceFree(position):
-    if board[position]==' ':
+    if globalboard[position]==' ':
         return True
     else:
         return False
@@ -46,9 +46,9 @@ def insertValue(player, position):
         print("position occupee, veuillez resaisir position: ")
         position = playerInput()
         insertValue(player, position)
-    board[position]= player
-    printBoard(board)
-    if checkWin(board)== True:
+    globalboard[position]= player
+    printBoard(globalboard)
+    if checkWin(globalboard)== True:
         print(player + " gagne")
         exit()
 
@@ -128,14 +128,13 @@ def checkWin(board):
 
 
 #fonction Player Movement
-def playerMove():
+def playerMove(currentPlayer, globalboard):
 
 
     while(1):
         print("Selectionner le pion a deplacer")
         exPosition = playerInput()
-    
-        while(board[exPosition] is not currentPlayer):
+        while(globalboard[exPosition] is not currentPlayer):
             print("cette case est vide ou ce jeton ne vous appartiens pas: ")
             exPosition = playerInput()
 
@@ -146,55 +145,56 @@ def playerMove():
         if keyboard_input == 'D': #droit
             newPosition = exPosition + 1
             if not bord_droit(exPosition) and espaceFree(newPosition):
-                board[newPosition] = currentPlayer
+                globalboard[newPosition] = currentPlayer
                 break
 
         elif keyboard_input == 'G': #gauche
             newPosition = exPosition -1
             if not bord_gauche(exPosition) and espaceFree(newPosition):
-                board[newPosition] = currentPlayer
+                globalboard[newPosition] = currentPlayer
                 break
         
         elif keyboard_input == 'H': #haut
             newPosition = exPosition - 5
             if not bord_haut(exPosition) and espaceFree(newPosition):
-                board[newPosition] = currentPlayer
+                globalboard[newPosition] = currentPlayer
                 break
 
         elif keyboard_input == 'B': #bas
             newPosition = exPosition + 5
             if not bord_bas(exPosition) and espaceFree(newPosition):
-                board[newPosition] = currentPlayer
+                globalboard[newPosition] = currentPlayer
                 break
 
         elif keyboard_input == 'Q': #cross up left
             newPosition = exPosition - 6
             if not bord_haut(exPosition) and not bord_gauche(exPosition) and espaceFree(newPosition):
-                board[newPosition] = currentPlayer
+                globalboard[newPosition] = currentPlayer
                 break
 
         elif keyboard_input == 'E': #cross up right
             newPosition = exPosition -4
             if not bord_haut(exPosition) and not bord_droit(exPosition) and espaceFree(newPosition):
-                board[newPosition] = currentPlayer
+                globalboard[newPosition] = currentPlayer
                 break
 
         elif keyboard_input == 'Z': #cross down left
             newPosition = exPosition + 4
             if not bord_bas(exPosition) and not bord_gauche(exPosition) and espaceFree(newPosition):
-                board[newPosition] = currentPlayer
+                globalboard[newPosition] = currentPlayer
                 break
         
         elif keyboard_input == 'X': #cross down right
             newPosition = exPosition + 6
             if not bord_bas(exPosition) and not bord_droit(exPosition) and espaceFree(newPosition):
-                board[newPosition] = currentPlayer
+                globalboard[newPosition] = currentPlayer
                 break
 
         else:
             print("mouvement invalide")
     
-    board[exPosition] = ' '
+    globalboard[exPosition] = ' '
+    return globalboard
 
 
 

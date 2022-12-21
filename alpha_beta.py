@@ -1,5 +1,7 @@
 
 from functions import *
+from variables import *
+import os
 #from Teeko_Projet import currentPlayer
 from json.encoder import INFINITY
 from copy import deepcopy
@@ -9,28 +11,9 @@ from copy import deepcopy
 
 #DEFINITION ALPHA BETA
 def AlphaBeta(board, pose):
-    global scoreprofondeur
-    global newscoreprofondeur
-    profondeurtest = 3
-    localboard= deepcopy(board)
-    newscoreprofondeur= profondeurtest
-    scoreprofondeur = profondeurtest
-    
-    def nextset(localboard,currentPlayer):
-        next=[]
-        for i in range(1,26):
-            localvalue=deepcopy(board)
-            if(localboard[i]==' '):
-                localvalue[i]=currentPlayer
-                next=next+[deepcopy(localvalue)]
-             
-        return next
-
-
-    
-            #DEFINITION DU MAXVALUEA
-    def MaxValue(localboard,profondeur, alpha,beta,bestscore):
-         global board
+             #DEFINITION DU MAXVALUEA
+    def MaxValue(localboard ,profondeur, alpha,beta,bestscore):
+         global resultboard
          global newscoreprofondeur
          if(checkWin(localboard)==True or profondeur==0):
 
@@ -50,19 +33,15 @@ def AlphaBeta(board, pose):
              alpha=max(alpha, resultat)
 
              if(resultat>bestscore and profondeurtest==profondeur):
-                 board=deepcopy(i)
+                 resultboard=deepcopy(i)
                  bestscore=resultat
 
              if(resultat==1 and bestscore==1 and profondeurtest==profondeur and newscoreprofondeur>scoreprofondeur):
-                 board=deepcopy(i)
+                 resultboard=deepcopy(i)
                  bestscore=resultat
                  newscoreprofondeur=scoreprofondeur
 
-
-             print(newscoreprofondeur," ",scoreprofondeur," ",bestscore)
-                    
-                
-             #print(bestscore)
+             print(newscoreprofondeur, scoreprofondeur, bestscore)
 
          return resultat
     
@@ -87,7 +66,28 @@ def AlphaBeta(board, pose):
 
             return resultat
 
+
+
+    global scoreprofondeur
+    global newscoreprofondeur
+    profondeurtest = 3
+    localboard= deepcopy(board)
+    newscoreprofondeur= profondeurtest
+    scoreprofondeur = profondeurtest
+    
+    def nextset(localboard,currentPlayer):
+        next=[]
+        for i in range(1,26):
+            localvalue=deepcopy(board)
+            if(localboard[i]==' '):
+                localvalue[i]=currentPlayer
+                next=next+[deepcopy(localvalue)]
+             
+        return next
+
+
     MaxValue(localboard, profondeurtest, -INFINITY, +INFINITY,-INFINITY)
+    return resultboard
 
 
 
@@ -262,7 +262,6 @@ def crossDownleft(exPosition):
 
 #POSE DES PIONS ORDINATEUR
 def computerset(localboard,compteur):
-    global board
     scoreboard={1:1,2:8,3:5,4:8,5:1,
                 6:8,7:10,8:15,9:10,10:8,
                 11:5,12:15,13:20,14:15,15:5,
@@ -271,7 +270,7 @@ def computerset(localboard,compteur):
     global machinePlayer
     position=0
     score=0
-    if(compteur !=4):
+    if(compteur <=4):
         for i in range(1,26):
             if (espaceFree(i) and scoreboard[i]>score):
                 score=scoreboard[i]
@@ -279,11 +278,11 @@ def computerset(localboard,compteur):
             
         localboard[position]= machinePlayer
         printBoard(localboard)
-    elif(compteur==4):
-        "STAND BEY"
-        AlphaBeta(board,True)
-        printBoard(board)
 
+    '''elif(compteur==4):
+        "STAND BEY"
+        AlphaBeta(localboard,True,localboard)
+        printBoard(localboard)'''
 
 #DETECTION DES PROCHAIN ETAT DE JEUX
 def nextBoardList(localboard,currentPlayer):
@@ -300,27 +299,27 @@ def nextBoardList(localboard,currentPlayer):
         if (localboard[j]==currentPlayer):
 
             if(crossUpright(j)!=False):
-                if( board[crossUpright(j)]==' '):
+                if( localboard[crossUpright(j)]==' '):
                     nextPositionList=nextPositionList+[[j,crossUpright(j)]]
                     i=i+1
 
             if(crossUpleft(j)!=False):
-                if( board[crossUpleft(j)]==' '):
+                if( localboard[crossUpleft(j)]==' '):
                     nextPositionList=nextPositionList+[[j,crossUpleft(j)]]
                     i=i+1
 
             if(crossDownright(j)!=False):
-                if( board[crossDownright(j)]==' '):
+                if( localboard[crossDownright(j)]==' '):
                     nextPositionList=nextPositionList+[[j,crossDownright(j)]]
                     i=i+1
 
             if(crossDownleft(j)!=False):
-                 if( board[crossDownleft(j)]==' '):
+                 if( localboard[crossDownleft(j)]==' '):
                     nextPositionList=nextPositionList+[[j,crossDownleft(j)]]
                     i=i+1
             
             if(upMove(j)!=False):
-                if( board[upMove(j)]==' '): 
+                if( localboard[upMove(j)]==' '): 
                     nextPositionList=nextPositionList+[[j,upMove(j)]]
                     i=i+1
                     
@@ -332,12 +331,12 @@ def nextBoardList(localboard,currentPlayer):
                    
                     
             if(rightMove(j)!=False):
-                if( board[rightMove(j)]==' '):
+                if( localboard[rightMove(j)]==' '):
                     nextPositionList=nextPositionList+[[j,rightMove(j)]]
                     i=i+1
 
             if(leftMove(j)!=False):
-                if( board[leftMove(j)]==' '):
+                if( localboard[leftMove(j)]==' '):
                     nextPositionList=nextPositionList+[[j,leftMove(j)]]
                     i=i+1      
                     
@@ -353,11 +352,7 @@ def nextBoardList(localboard,currentPlayer):
 
 
 # Definition de COMPUTER MOVE
-def computerMove(): 
+def computerMove(board): 
+   return AlphaBeta(board,False)
 
-    global board
-    AlphaBeta(board,False)
-
-    if(checkWin(board)== True):
-        printBoard(board)
-        print(string(currentPlayer) + " a gange")
+  

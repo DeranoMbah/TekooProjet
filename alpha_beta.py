@@ -94,7 +94,7 @@ def AlphaBeta(board, pose):
 
 #Definition de la fonction D'evaluation
 def eval(board, profondeur):
-    
+    global newscoreprofondeur
     scoreboard={1:1,2:8,3:5,4:8,5:1,
                 6:8,7:10,8:15,9:10,10:8,
                 11:5,12:15,13:20,14:15,15:5,

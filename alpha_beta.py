@@ -15,11 +15,16 @@ def AlphaBeta(board, pose):
     def MaxValue(localboard ,profondeur, alpha,beta,bestscore):
          global resultboard
          global newscoreprofondeur
+         global scoreprofondeur
          if(checkWin(localboard)==True or profondeur==0):
 
              return(eval(localboard,profondeur,'B'))
 
          resultat= - INFINITY
+
+         if(nombredepions(localboard)==True):
+             pose== False
+
          if(pose==True):
             nextplay= nextset(deepcopy(localboard),'N')
          else:
@@ -53,6 +58,10 @@ def AlphaBeta(board, pose):
             return(eval(localboard,profondeur,'N'))
 
         resultat= + INFINITY
+
+        if(nombredepions(localboard)==True):
+             pose== False
+
         if(pose==True):
             nextplay= nextset(deepcopy(localboard),'B')
         else:
@@ -68,13 +77,22 @@ def AlphaBeta(board, pose):
 
             return resultat
 
-
+    def nombredepions(localboard):
+        p=0
+        for i in range (1,26):
+            if localboard[i]=='N':
+                p=p+1
+        
+        if(p==4):
+            return True
+        else:
+            return False
 
     global scoreprofondeur
     global newscoreprofondeur
     global profondeurvariable
     if(pose==True):
-        profondeurtest = 3
+        profondeurtest = 6
     else:
         profondeurtest = 3
 
@@ -96,7 +114,7 @@ def eval(board, profondeur, CurrentLocal):
     global scoreprofondeur
     global profondeurvariable
     scoreboard={1:1,2:8,3:5,4:8,5:1,
-                6:8,7:15,8:15,9:15,10:8,
+                6:8,7:10,8:15,9:10,10:8,
                 11:5,12:15,13:20,14:15,15:5,
                 16:8,17:10,18:15,19:10,20:8,
                 21:1,22:8,23:5,24:8,25:1}
@@ -263,6 +281,7 @@ def crossDownleft(exPosition):
 
 #POSE DES PIONS ORDINATEUR
 def computerset(localboard,compteur):
+    global confirmationPose
     scoreboard={1:1,2:8,3:5,4:8,5:1,
                 6:8,7:10,8:15,9:15,10:8,
                 11:5,12:15,13:20,14:15,15:5,
@@ -281,7 +300,7 @@ def computerset(localboard,compteur):
         printBoard(localboard)
         return localboard
     else:
-        "STAND BEY"
+        
         localboard=deepcopy(AlphaBeta(localboard,True))
         printBoard(localboard)
         if checkWin(localboard):

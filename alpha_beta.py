@@ -92,7 +92,7 @@ def AlphaBeta(board, pose):
     global newscoreprofondeur
     global profondeurvariable
     if(pose==True):
-        profondeurtest = 6
+        profondeurtest = 5
     else:
         profondeurtest = 3
 

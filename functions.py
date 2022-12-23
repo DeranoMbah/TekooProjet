@@ -15,6 +15,80 @@ def printBoard(board):
         print("\n")
 
 
+def print_menu():
+
+    global choice
+
+    print("1.commandes")
+    print("2.ai vs human")
+    print("3.human vs human")
+  
+
+def valid_choice():
+
+    is_valid_input = False
+    is_out_of_band = False
+
+    while not is_valid_input or is_out_of_band:
+        try:
+        
+            choice_test = int(input("Entrer le numero de votre choix: "))
+            is_valid_input = True
+
+            if choice_test < 0 or choice_test > 3:
+                print("entree invalide: ")
+                is_out_of_band = True
+            else:
+                is_out_of_band = False
+
+        except ValueError as error:
+            print("entree invalide: ")
+
+        else:
+            is_valid_input = True
+            if not is_out_of_band:
+                return choice_test
+
+def valid_starter():
+
+    is_valid_input = False
+    is_out_of_band = False
+
+    while not is_valid_input or is_out_of_band:
+        try:
+        
+            choice_test = int(input("Desirer vous etre le premier a jouer: 1. oui   -   2. non"))
+            is_valid_input = True
+
+            if choice_test < 0 or choice_test > 2:
+                print("entree invalide: ")
+                is_out_of_band = True
+            else:
+                is_out_of_band = False
+
+        except ValueError as error:
+            print("entree invalide: ")
+
+        else:
+            is_valid_input = True
+            if not is_out_of_band:
+                return choice_test
+            
+        
+
+
+
+def print_commandes():
+    print("haut: h")
+    print("bas: b")
+    print("gauche: g")
+    print("droite: d")
+    print("cross-up-righ: e")
+    print("cross-up-left: q")
+    print("cross-down-righ: x")
+    print("cross-down-left: z")
+    print("\n notice: les commandes ne sont pas case sentive")
+
         # Space IS FREE
 def espaceFree(position, localboard):
     if localboard[position]==' ':

@@ -9,7 +9,7 @@ from site import ENABLE_USER_SITE
 from variables import *
 from functions import *
 from alpha_beta import *
-
+from game import *
 
 
    
@@ -20,77 +20,36 @@ from alpha_beta import *
         16:' ',17:' ',18:' ',19:' ',20:' ',
         21:'N',22:' ',23:' ',24:'N',25:' '}'''
 
+while(1):
+    if not is_game_on:
+        print_menu()
+        choice = valid_choice()
 
-
-starter = int(input("Desirer vous etre le premier a jouer: 1. oui   -   2. non"))
-
-
-while not checkWin(globalboard):
-       # Chargement de Coin ou jeuton de jeux par les joeurs
-    
-    #IA BEGIN
-    if starter == 2:
-        currentPlayer = humanPlayer
-
-        #debut du jeu: pose de 4 premiers pions
-        if (debut==1):
-            for i in range(1,5):
-                print("jeu ", i)
-                globalboard= deepcopy(computerset(globalboard,i))
-                posi = playerInput()
-                insertValue(globalboard,currentPlayer, posi)
-                #i=i+1
-
-            debut = 0
-            
-        #fin pose de 4 premiers pions  
+        if choice == 1:
+            print_commandes()
         
-        currentPlayer = machinePlayer
-        globalboard = deepcopy(computerMove(globalboard))
-        if checkWin(globalboard):
-            printBoard(globalboard)
-            print(currentPlayer + " a gagne!")
-            exit()
-        currentPlayer = humanPlayer
-        printBoard(globalboard)
-        globalboard = playerMove(currentPlayer, globalboard)
-        if checkWin(globalboard):
-            printBoard(globalboard)
-            print(currentPlayer + " a gagne!")
-            exit()
-
-    #PLAYER BEGIN
-    else:
-
-        currentPlayer = humanPlayer
-
-        #debut du jeu: pose de 4 premiers pions
-        if (debut==1):
-            for i in range(1,5):
-                print("jeu ", i)
-                posi = playerInput()
-                insertValue(globalboard,currentPlayer, posi)
-                globalboard= deepcopy(computerset(globalboard,i))
-                #i=i+1
-            debut = 0
+        else :
+            O = os.system('cls')
+            if O > 0:
+                os.system('clear')
             
-        #fin pose de 4 premiers pions
+            is_game_on = True
 
-        globalboard = playerMove(currentPlayer, globalboard)
-        if checkWin(globalboard):
-            printBoard(globalboard)
-            print(currentPlayer + " a gagne!")
-            exit()
-        currentPlayer = machinePlayer
-        globalboard = deepcopy(computerMove(globalboard))
-        printBoard(globalboard)
+        
+    if is_game_on:
+        
+        if choice == 2:
+    
+            starter = valid_starter()
 
-        if checkWin(globalboard):
-            printBoard(globalboard)
-            print(currentPlayer + " a gagne!")
-            exit()
-
-
+            while is_game_on:
+                if starter == 2:
+                    start_with_AI()
+                else:
+                    start_with_human()
+        
+        else:
+            one_on_one()
 
 
       
